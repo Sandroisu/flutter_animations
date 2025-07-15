@@ -38,10 +38,21 @@ class AnimatedStar extends StatelessWidget {
     return AnimatedScale(
       scale: isActive ? 1.0 : 0.5,
       duration: _duration,
-      child: Icon(
-        Icons.star,
-        size: 50,
-        color: isActive ? _activatedColor : _deactivatedColor,
+      child: TweenAnimationBuilder(
+        // Add from here...
+        duration: _duration,
+        tween: ColorTween(
+          begin: _deactivatedColor,
+          end: isActive ? _activatedColor : _deactivatedColor,
+        ),
+        builder: (context, value, child) {
+          // To here.
+          return Icon(
+            Icons.star,
+            size: 50,
+            color: value,
+          ); // And modify this line.
+        },
       ),
     );
   }
