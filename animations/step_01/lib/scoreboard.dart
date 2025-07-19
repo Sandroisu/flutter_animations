@@ -39,7 +39,6 @@ class AnimatedStar extends StatelessWidget {
       scale: isActive ? 1.0 : 0.5,
       duration: _duration,
       child: TweenAnimationBuilder(
-        // Add from here...
         duration: _duration,
         tween: ColorTween(
           begin: _deactivatedColor,
@@ -51,7 +50,7 @@ class AnimatedStar extends StatelessWidget {
             Icons.star,
             size: 50,
             color: value,
-          ); // And modify this line.
+          );
         },
       ),
     );
