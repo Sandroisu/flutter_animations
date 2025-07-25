@@ -85,13 +85,17 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(
-          question ?? '',
-          style: Theme.of(context).textTheme.displaySmall,
+    return AnimatedSwitcher(
+      // NEW
+      duration: const Duration(milliseconds: 300),
+      child: Card(
+        elevation: 4,
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            question ?? '',
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
         ),
       ),
     );
