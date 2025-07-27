@@ -94,7 +94,11 @@ class QuestionCard extends StatelessWidget {
           begin: Offset(-0.1, 0.0),
           end: Offset.zero,
         ).animate(curveAnimation);
-        return SlideTransition(position: offsetAnimation, child: child);
+        final fadeInAnimation = curveAnimation;                            // NEW
+        return FadeTransition(                                             // NEW
+          opacity: fadeInAnimation,                                        // NEW
+          child: SlideTransition(position: offsetAnimation, child: child), // NEW
+        );
       },
       duration: const Duration(milliseconds: 300),
       child: Card(
