@@ -5,11 +5,13 @@ import 'package:flutter/widgets.dart';
 class CardFlipEffect extends StatefulWidget {
   final Widget child;
   final Duration duration;
+  final double delayAmount;
 
   const CardFlipEffect({
     super.key,
     required this.child,
     required this.duration,
+    required this.delayAmount,
   });
 
   @override
