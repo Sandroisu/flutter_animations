@@ -22,6 +22,7 @@ class _CardFlipEffectState extends State<CardFlipEffect>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   Widget? _previousChild;
+  late final Animation<double> _animationWithDelay;
 
   @override
   void initState() {
@@ -37,6 +38,15 @@ class _CardFlipEffectState extends State<CardFlipEffect>
         _animationController.reset();
       }
     });
+
+    _animationWithDelay = TweenSequence<double>([
+      if (widget.delayAmount > 0)
+        TweenSequenceItem(
+          tween: ConstantTween<double>(0.0),
+          weight: widget.delayAmount,
+        ),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 1.0),
+    ]).animate(_animationController);
   }
 
   @override
