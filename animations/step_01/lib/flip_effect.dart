@@ -66,14 +66,14 @@ class _CardFlipEffectState extends State<CardFlipEffect>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _animationController,
+      animation: _animationWithDelay,
       builder: (context, child) {
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..rotateX(_animationController.value * math.pi),
+            ..rotateX(_animationWithDelay.value * math.pi),
           child: _animationController.isAnimating
-              ? _animationController.value < 0.5
+              ? _animationWithDelay.value < 0.5
               ? _previousChild
               : Transform.flip(flipY: true, child: child)
               : child,
