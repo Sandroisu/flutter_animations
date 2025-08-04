@@ -1,4 +1,6 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+
 import 'question_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -30,11 +32,12 @@ class HomeScreen extends StatelessWidget {
                     },
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      );
-                    },
+                          return FadeThroughTransition(                     // Add from here...
+                            animation: animation,
+                            secondaryAnimation: secondaryAnimation,
+                            child: child,
+                          );
+                        },
                   ),
                 );
               },
