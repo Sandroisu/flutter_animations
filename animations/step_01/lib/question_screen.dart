@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'scoreboard.dart';
 import 'view_model.dart';
@@ -86,28 +87,15 @@ class QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      layoutBuilder: (currentChild, previousChildren) {
-        return Stack(
-          alignment: Alignment.topCenter,
-          children: <Widget>[
-            ...previousChildren,
-            if (currentChild != null) currentChild,
-          ],
-        );
+    return PageTransitionSwitcher(
+      layoutBuilder: (entries) {
+        return Stack(alignment: Alignment.topCenter, children: entries);
       },
-      transitionBuilder: (child, animation) {
-        final curveAnimation = CurveTween(
-          curve: Curves.easeInCubic,
-        ).animate(animation);
-        final offsetAnimation = Tween<Offset>(
-          begin: Offset(-0.1, 0.0),
-          end: Offset.zero,
-        ).animate(curveAnimation);
-        final fadeInAnimation = curveAnimation;
-        return FadeTransition(
-          opacity: fadeInAnimation,
-          child: SlideTransition(position: offsetAnimation, child: child),
+      transitionBuilder: (child, animation, secondaryAnimation) {
+        return FadeThroughTransition(
+          animation: animation,
+          secondaryAnimation: secondaryAnimation,
+          child: child,
         );
       },
       duration: const Duration(milliseconds: 300),
