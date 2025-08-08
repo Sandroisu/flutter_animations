@@ -1,8 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+
+import 'flip_effect.dart';
 import 'scoreboard.dart';
 import 'view_model.dart';
-import 'flip_effect.dart';
 
 class QuestionScreen extends StatefulWidget {
   const QuestionScreen({super.key});
@@ -15,6 +16,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   late final QuizViewModel viewModel = QuizViewModel(
     onGameOver: _handleGameOver,
   );
+  VoidCallback? _showGameOverScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
           body: Center(
             child: Column(
               children: [
-                QuestionCard(question: viewModel.currentQuestion?.question),
+                QuestionCard(
+                  onChangeOpenContainer: _handleChangeOpenContainer,
+                  question: viewModel.currentQuestion?.question,
+                  viewModel: viewModel,
+                ),
                 Spacer(),
                 AnswerCards(
                   onTapped: (index) {
@@ -58,39 +64,36 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 
+  void _handleChangeOpenContainer(VoidCallback openContainer) {
+    _showGameOverScreen = openContainer;
+  }
+
   void _handleGameOver() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Game Over!'),
-          content: Text('Score: ${viewModel.score}'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    if (_showGameOverScreen != null) {
+      _showGameOverScreen!();
+    }
   }
 }
 
 class QuestionCard extends StatelessWidget {
   final String? question;
 
-  const QuestionCard({required this.question, super.key});
+  const QuestionCard({
+    required this.onChangeOpenContainer,
+    required this.question,
+    required this.viewModel,
+    super.key,
+  });
+
+  final ValueChanged<VoidCallback> onChangeOpenContainer;
+  final QuizViewModel viewModel;
+
+  static const _backgroundColor = Color(0xfff2f3fa);
 
   @override
   Widget build(BuildContext context) {
     return PageTransitionSwitcher(
-      layoutBuilder: (entries) {
-        return Stack(alignment: Alignment.topCenter, children: entries);
-      },
+      duration: const Duration(milliseconds: 200),
       transitionBuilder: (child, animation, secondaryAnimation) {
         return FadeThroughTransition(
           animation: animation,
@@ -98,15 +101,64 @@ class QuestionCard extends StatelessWidget {
           child: child,
         );
       },
-      duration: const Duration(milliseconds: 300),
-      child: Card(
-        elevation: 4,
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(
-            question ?? '',
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
+      child: OpenContainer(
+        key: ValueKey(question),
+        tappable: false,
+        closedColor: _backgroundColor,
+        closedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+        ),
+        closedElevation: 4,
+        closedBuilder: (context, openContainer) {
+          onChangeOpenContainer(openContainer);
+          return ColoredBox(
+            color: _backgroundColor,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                question ?? '',
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+            ),
+          );
+        },
+        openBuilder: (context, closeContainer) {
+          return GameOverScreen(viewModel: viewModel);
+        },
+      ),
+    );
+  }
+}
+
+class GameOverScreen extends StatelessWidget {
+  final QuizViewModel viewModel;
+
+  const GameOverScreen({required this.viewModel, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(automaticallyImplyLeading: false),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Scoreboard(
+              score: viewModel.score,
+              totalQuestions: viewModel.totalQuestions,
+            ),
+            Text('You Win!', style: Theme.of(context).textTheme.displayLarge),
+            Text(
+              'Score: ${viewModel.score} / ${viewModel.totalQuestions}',
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
+            ElevatedButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+            ),
+          ],
         ),
       ),
     );
